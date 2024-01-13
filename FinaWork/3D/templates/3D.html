@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D柱状图示例</title>
+  <!-- 引入ECharts库 -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+  <!-- 引入jQuery库 -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body>
+
+<div id="chart" style="width: 800px; height: 600px;"></div>
+
+<script>
+  // 创建ECharts实例
+  var myChart = echarts.init(document.getElementById('chart'));
+
+  // 数据获取和图表渲染
+  $.get(
+    'YOUR_DATA_FILE_PATH.csv',
+    function (data) {
+      option = {
+        grid3D: {},
+        tooltip: {},
+        xAxis3D: {
+          type: 'category'
+        },
+        yAxis3D: {
+          type: 'category'
+        },
+        zAxis3D: {},
+        visualMap: {
+          max: 1e10, // 根据你的数据调整最大值
+          dimension: 'TotalBytes'
+        },
+        dataset: {
+          dimensions: [
+            'Time',
+            'Protocol',
+            'TotalBytes'
+          ],
+          source: data
+        },
+        series: [
+          {
+            type: 'bar3D',
+            shading: 'lambert',
+            encode: {
+              x: 'Time',
+              y: 'Protocol',
+              z: 'TotalBytes',
+              tooltip: [0, 1, 2]
+            }
+          }
+        ]
+      };
+      myChart.setOption(option);
+    },
+    'csv' // 指定数据格式为csv
+  );
+</script>
+
+</body>
+</html>

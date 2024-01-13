@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>3D柱状图</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+</head>
+<body>
+    <div id="main" style="width: 800px; height:600px; background-color: aliceblue"></div>
+    <script type="text/javascript">
+        var data = {{ data | tojson | safe }};
+        var myChart = echarts.init(document.getElementById('main'));
+        var timeData = data.map(item => item.Time);
+        var protocolData = data.map(item => item.Protocol);
+        var totalBytesData = data.map(item => item.TotalBytes);
+        // 配置图表选项
+        var option = {
+            grid3D: {
+                boxWidth:400,
+                boxDepth:80,
+                left:-100,
+                top:0,
+                viewControl:{distance:320},
+                light: {
+                    main: {intensity: 1.2, shadow: true},
+                    ambient: {intensity: 0.3}
+                }
+            },
+            tooltip: {},
+             xAxis3D: {
+                type: 'category',
+                data: timeData  // x轴映射到时间数据
+            },
+            yAxis3D: {
+                type: 'category',
+                data: protocolData  // y轴映射到协议类型数据
+            },
+            zAxis3D: {
+                type: 'category',
+                data: totalBytesData
+            },  // 配置z轴
+            visualMap: {
+                max: Math.max(...totalBytesData),  // 设置最大值为总流量的最大值
+                dimension: 'value'  // 视觉映射的数据维度
+            },
+            dataset: {
+                dimensions: [
+                    '时间',
+                    '协议类型',
+                    '总流量'
+                ],
+                source: data  // 数据来源
+            },
+            series: [
+                {
+                    type: 'bar3D',
+                    name: '3D',
+                    shading: 'lambert',
+                    encode: {
+                        X:'days',
+                        Y:'protocolCode',
+                        Z:'srcAllBytes',
+                        tooltip: [0, 1, 2, 3, 4],
+                        label:2
+                    }
+                }
+            ]
+        };
+        myChart.setOption(option);
+    </script>
+</body>
+</html>
